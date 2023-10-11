@@ -29,10 +29,7 @@ func (g GetExchange) Get(ctx context.Context) (exchange.Exchange, error) {
 
 	quotation := adapters.ParseApiResponseToExchange(quotationResponse)
 
-	err = g.quotationRepository.Save(ctx, quotation)
-	if err != nil {
-		return e, customerr.NewCustomError(err)
-	}
+	g.quotationRepository.Save(ctx, quotation)
 
 	e.CurrentValue = quotation.Bid
 

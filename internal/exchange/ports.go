@@ -6,7 +6,7 @@ import (
 )
 
 type QuotationRepository interface {
-	Save(context.Context, Quotation) error
+	Save(context.Context, Quotation)
 }
 
 type QuotationApiIntegration interface {

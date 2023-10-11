@@ -24,7 +24,7 @@ func main() {
 	}
 
 	select {
-	case <-time.After(5 * time.Second):
+	case <-time.After(1 * time.Second):
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
 			log.Fatal(err)

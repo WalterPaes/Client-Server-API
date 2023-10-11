@@ -1,9 +1,11 @@
 package exchange
 
-import "time"
+import (
+	"time"
+)
 
 type Quotation struct {
-	UUID       string
+	UUID       string `gorm:"primaryKey"`
 	Code       string
 	CodeIn     string
 	Name       string

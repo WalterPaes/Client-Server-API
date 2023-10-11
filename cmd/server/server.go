@@ -1,22 +1,33 @@
 package main
 
 import (
+	"github.com/WalterPaes/Client-Server-API/internal/exchange"
 	"github.com/WalterPaes/Client-Server-API/internal/exchange/handlers"
 	"github.com/WalterPaes/Client-Server-API/internal/exchange/repository"
 	"github.com/WalterPaes/Client-Server-API/internal/exchange/services"
 	"github.com/WalterPaes/Client-Server-API/internal/exchange/usecases"
-	"github.com/WalterPaes/Client-Server-API/pkg/database"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"net/http"
 )
 
 func main() {
-	db := database.NewDatabaseConnection()
-	defer db.GetConnection().Close()
-	db.Migrate()
+	db, err := gorm.Open(sqlite.Open("quotations.db"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.AutoMigrate(&exchange.Quotation{})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	getExchangeUC := usecases.NewGetExchange(
-		repository.NewRepository(db.GetConnection()),
+		repository.NewRepository(db),
 		services.NewQuotationApi(),
 	)
 
