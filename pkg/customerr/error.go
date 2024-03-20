@@ -1,5 +1,7 @@
 package customerr
 
+import "encoding/json"
+
 type CustomErr struct {
 	Err error `json:"error"`
 }
@@ -11,5 +13,6 @@ func NewCustomError(err error) *CustomErr {
 }
 
 func (c CustomErr) Error() string {
-	return c.Err.Error()
+	str, _ := json.Marshal(c)
+	return string(str)
 }

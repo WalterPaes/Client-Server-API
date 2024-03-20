@@ -17,8 +17,8 @@ func NewQuotationApi() *QuotationApi {
 	return &QuotationApi{}
 }
 
-func (e QuotationApi) Get(parentCtx context.Context) (QuotationApiResponse, error) {
-	ctx, cancel := context.WithTimeout(parentCtx, time.Millisecond*200)
+func (e QuotationApi) Get() (QuotationApiResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*200)
 	defer cancel()
 
 	var q QuotationApiResponse
@@ -29,12 +29,14 @@ func (e QuotationApi) Get(parentCtx context.Context) (QuotationApiResponse, erro
 		return q, customerr.NewCustomError(err)
 	}
 
+	log.Println("[QuotationApi] Iniciando requisição para api de cotação")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Printf("[QuotationApi] Message: %s", err.Error())
 		return q, customerr.NewCustomError(err)
 	}
 
+	log.Println("[QuotationApi] Lendo response body da requisição")
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Printf("[QuotationApi] Message: %s", err.Error())
@@ -58,6 +60,7 @@ func (e QuotationApi) Get(parentCtx context.Context) (QuotationApiResponse, erro
 		return q, customerr.NewCustomError(err)
 	}
 
+	log.Println("[QuotationApi] Requisição realizada")
 	return q, nil
 }
 

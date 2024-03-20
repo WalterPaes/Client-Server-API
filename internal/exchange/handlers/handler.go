@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -20,24 +21,24 @@ func NewHandler(getExchangeUseCase *usecases.GetExchange) *Handler {
 }
 
 func (h Handler) GetExchange(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx := context.Background()
 
 	select {
-	case <-time.After(5 * time.Second):
+	case <-time.After(time.Second * 1):
 		w.Header().Set("Content-Type", "application/json")
-		status := http.StatusOK
 
 		exchange, err := h.getExchangeUseCase.Get(ctx)
 		if err != nil {
-			status = http.StatusInternalServerError
+			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
 			return
 		}
 		response, _ := json.Marshal(exchange)
 
-		w.WriteHeader(status)
+		w.WriteHeader(http.StatusOK)
 		w.Write(response)
 		return
+
 	case <-ctx.Done():
 		log.Println("Request Finalizada pelo Servidor")
 	}

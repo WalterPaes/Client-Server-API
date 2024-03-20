@@ -23,40 +23,44 @@ func main() {
 		log.Fatal(err)
 	}
 
+	log.Println("Iniciando Requisição na API de Cotação")
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Lendo response body da requisição")
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		log.Fatal("Unexpected Status Code: ", res.StatusCode)
+	}
+
+	var e exchange.Exchange
+	err = json.Unmarshal(body, &e)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Criando o arquivo de cotação")
+	file, err := os.Create("cotacao.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(fmt.Sprintf("Dólar: %.2f", e.CurrentValue))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Dados salvos no arquivo cotacao.txt")
+
 	select {
-	case <-time.After(1 * time.Second):
-		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		body, err := io.ReadAll(res.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer res.Body.Close()
-
-		if res.StatusCode != http.StatusOK {
-			log.Fatal("Unexpected Status Code: ", res.StatusCode)
-		}
-
-		var e exchange.Exchange
-		err = json.Unmarshal(body, &e)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		file, err := os.Create("cotacao.txt")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
-
-		_, err = file.WriteString(fmt.Sprintf("Dólar: %.2f", e.CurrentValue))
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Println("Dados salvos no arquivo cotacao.txt")
 	case <-ctx.Done():
 		log.Println("Request Finalizada pelo Cliente")
 	}

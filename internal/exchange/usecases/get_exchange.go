@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+
 	"github.com/WalterPaes/Client-Server-API/internal/exchange"
 	"github.com/WalterPaes/Client-Server-API/internal/exchange/adapters"
 	"github.com/WalterPaes/Client-Server-API/pkg/customerr"
@@ -22,14 +23,14 @@ func NewGetExchange(repository exchange.QuotationRepository, apiIntegration exch
 func (g GetExchange) Get(ctx context.Context) (exchange.Exchange, error) {
 	var e exchange.Exchange
 
-	quotationResponse, err := g.quotationApiIntegration.Get(ctx)
+	quotationResponse, err := g.quotationApiIntegration.Get()
 	if err != nil {
 		return e, customerr.NewCustomError(err)
 	}
 
 	quotation := adapters.ParseApiResponseToExchange(quotationResponse)
 
-	g.quotationRepository.Save(ctx, quotation)
+	g.quotationRepository.Save(quotation)
 
 	e.CurrentValue = quotation.Bid
 

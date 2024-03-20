@@ -1,14 +1,18 @@
 package adapters
 
 import (
+	"log"
+	"strconv"
+	"time"
+
 	"github.com/WalterPaes/Client-Server-API/internal/exchange"
 	"github.com/WalterPaes/Client-Server-API/internal/exchange/services"
 	"github.com/google/uuid"
-	"strconv"
-	"time"
 )
 
 func ParseApiResponseToExchange(input services.QuotationApiResponse) exchange.Quotation {
+	log.Println("Realizando parse do response body para o model")
+
 	high, _ := strconv.ParseFloat(input.Usdbrl.High, 64)
 	low, _ := strconv.ParseFloat(input.Usdbrl.Low, 64)
 	varBid, _ := strconv.ParseFloat(input.Usdbrl.VarBid, 64)
