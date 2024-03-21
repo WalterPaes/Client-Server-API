@@ -5,7 +5,7 @@ import (
 )
 
 type QuotationRepository interface {
-	Save(Quotation)
+	Save(Quotation) error
 }
 
 type QuotationApiIntegration interface {

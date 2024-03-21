@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -17,13 +18,17 @@ func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{db: db}
 }
 
-func (r Repository) Save(exchange exchange.Quotation) {
+func (r Repository) Save(exchange exchange.Quotation) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*10)
 	defer cancel()
 
 	log.Println("Salvando no banco de dados")
 
-	r.db.WithContext(ctx).Create(exchange)
+	tx := r.db.WithContext(ctx).Create(exchange)
+	if tx.Error != nil {
+		return fmt.Errorf("[Repository Error] %s", tx.Error.Error())
+	}
 
 	log.Println("Dados salvos no banco de dados")
+	return nil
 }
